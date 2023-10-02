@@ -58,10 +58,41 @@ public class MainActivity extends AppCompatActivity {
         button8.setOnClickListener(view -> appendNumber("8"));
         button9.setOnClickListener(view -> appendNumber("9"));
 
-        buttonAdd.setOnClickListener(view -> add());
-        buttonSubtract.setOnClickListener(view -> subtract());
-        buttonMultiply.setOnClickListener(view -> multiply());
-        buttonDivide.setOnClickListener(view -> divide());
+//        buttonAdd.setOnClickListener(view -> add());
+//        buttonSubtract.setOnClickListener(view -> subtract());
+//        buttonMultiply.setOnClickListener(view -> multiply());
+//        buttonDivide.setOnClickListener(view -> divide());
+        buttonAdd.setOnClickListener(view -> {
+            operator = "+";
+            if (!currNumber.isEmpty()) {
+                result = Double.parseDouble(currNumber);
+                currNumber = "";
+            }
+        });
+
+        buttonSubtract.setOnClickListener(view -> {
+            operator = "-";
+            if (!currNumber.isEmpty()) {
+                result = Double.parseDouble(currNumber);
+                currNumber = "";
+            }
+        });
+
+        buttonMultiply.setOnClickListener(view -> {
+            operator = "*";
+            if (!currNumber.isEmpty()) {
+                result = Double.parseDouble(currNumber);
+                currNumber = "";
+            }
+        });
+
+        buttonDivide.setOnClickListener(view -> {
+            operator = "/";
+            if (!currNumber.isEmpty()) {
+                result = Double.parseDouble(currNumber);
+                currNumber = "";
+            }
+        });
         buttonEqual.setOnClickListener(view -> calculate());
         buttonClear.setOnClickListener(view -> clear());
         buttonDecimal.setOnClickListener(view -> addDecimal());
@@ -73,23 +104,37 @@ public class MainActivity extends AppCompatActivity {
         currNumber += number;
         textView.setText(currNumber);
     }
+//    private void setOperator(String op) {
+//        if (!currNumber.isEmpty()) {
+//            operator = op;
+//            result = Double.parseDouble(currNumber);
+//            currNumber = "";
+//        }
+//    }
     private void setOperator(String op) {
-        if (!currNumber.isEmpty()) {
-            operator = op;
-            result = Double.parseDouble(currNumber);
-            currNumber = "";
+        if (currNumber.isEmpty()) {
+            currNumber = "0";
         }
+
+        operator = op;
+        result = Double.parseDouble(currNumber);
+        currNumber = "";
     }
+
     private void add() {
+
         setOperator("+");
     }
     private void subtract() {
+
         setOperator("-");
     }
     private void multiply() {
+
         setOperator("*");
     }
     private void divide() {
+
         setOperator("/");
     }
     private void calculate() {
@@ -111,6 +156,9 @@ public class MainActivity extends AppCompatActivity {
             currNumber = String.valueOf(number);
             textView.setText(currNumber);
         }
+    }
+    private void clearOperator() {
+        operator = "";
     }
 
     private void addDecimal() {
@@ -145,6 +193,11 @@ public class MainActivity extends AppCompatActivity {
                     } else {
                         // Handle division by zero error
                         // ...
+                        currNumber = "Error";
+                        operator = "";
+                        result = 0.0;
+                        textView.setText(currNumber);
+                        return;
                     }
                     break;
             }
