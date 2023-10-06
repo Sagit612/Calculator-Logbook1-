@@ -13,9 +13,11 @@ public class MainActivity extends AppCompatActivity {
     String currNumber;  // Current number
     Double result = 0.0;
     String operator;
+    private boolean calculationPerformed = false;
 
     // UI components
     TextView textView;
+    TextView calculationDisplay;
 //    Button button1, button2, button3, button4, button5, button6, button7, button8, button9, button0;
 //    Button buttonAC, buttonArithmetic, buttonPercentage, buttonDecimal;
 //    Button buttonAdd, buttonSubstract, buttonMutiply, buttonDivide, buttonEqual;
@@ -26,6 +28,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         currNumber = "";
         textView = findViewById(R.id.editText);
+        calculationDisplay = findViewById(R.id.calculationDisplay);
         Button button0 = findViewById(R.id.btn0);
         Button button1 = findViewById(R.id.btn1);
         Button button2 = findViewById(R.id.btn2);
@@ -58,38 +61,42 @@ public class MainActivity extends AppCompatActivity {
         button8.setOnClickListener(view -> appendNumber("8"));
         button9.setOnClickListener(view -> appendNumber("9"));
 
-//        buttonAdd.setOnClickListener(view -> add());
-//        buttonSubtract.setOnClickListener(view -> subtract());
-//        buttonMultiply.setOnClickListener(view -> multiply());
-//        buttonDivide.setOnClickListener(view -> divide());
         buttonAdd.setOnClickListener(view -> {
             operator = "+";
+            calculationPerformed = false;
             if (!currNumber.isEmpty()) {
-                result = Double.parseDouble(currNumber);
+                prevNumber = currNumber;
+//                result = Double.parseDouble(currNumber);
                 currNumber = "";
             }
         });
 
         buttonSubtract.setOnClickListener(view -> {
             operator = "-";
+            calculationPerformed = false;
             if (!currNumber.isEmpty()) {
-                result = Double.parseDouble(currNumber);
+                prevNumber = currNumber;
+//                result = Double.parseDouble(currNumber);
                 currNumber = "";
             }
         });
 
         buttonMultiply.setOnClickListener(view -> {
             operator = "*";
+            calculationPerformed = false;
             if (!currNumber.isEmpty()) {
-                result = Double.parseDouble(currNumber);
+                prevNumber = currNumber;
+//                result = Double.parseDouble(currNumber);
                 currNumber = "";
             }
         });
 
         buttonDivide.setOnClickListener(view -> {
             operator = "/";
+            calculationPerformed = false;
             if (!currNumber.isEmpty()) {
-                result = Double.parseDouble(currNumber);
+                prevNumber = currNumber;
+//                result = Double.parseDouble(currNumber);
                 currNumber = "";
             }
         });
@@ -101,24 +108,22 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void appendNumber(String number) {
+        if (calculationPerformed) {
+            clear();
+            calculationPerformed = false;
+        }
         currNumber += number;
         textView.setText(currNumber);
     }
-//    private void setOperator(String op) {
-//        if (!currNumber.isEmpty()) {
-//            operator = op;
-//            result = Double.parseDouble(currNumber);
-//            currNumber = "";
-//        }
-//    }
-    private void setOperator(String op) {
-        if (currNumber.isEmpty()) {
-            currNumber = "0";
-        }
 
-        operator = op;
-        result = Double.parseDouble(currNumber);
-        currNumber = "";
+    private void setOperator(String op) {
+        if (!currNumber.isEmpty()) {
+            operator = op;
+            prevNumber = currNumber;
+            currNumber = "";
+
+        }
+        updateCalculationDisplay();
     }
 
     private void add() {
@@ -130,7 +135,6 @@ public class MainActivity extends AppCompatActivity {
         setOperator("-");
     }
     private void multiply() {
-
         setOperator("*");
     }
     private void divide() {
@@ -157,8 +161,17 @@ public class MainActivity extends AppCompatActivity {
             textView.setText(currNumber);
         }
     }
-    private void clearOperator() {
-        operator = "";
+//    private void clearOperator() {
+//        operator = "";
+//    }
+    private void updateCalculationDisplay() {
+        if (currNumber.equals("Error") && prevNumber.equals("Error")) {
+            calculationDisplay.setText("Error");
+        } else {
+            String calculation = prevNumber + " " + operator + " " + currNumber;
+            calculationDisplay.setText(calculation);
+        }
+
     }
 
     private void addDecimal() {
@@ -173,36 +186,43 @@ public class MainActivity extends AppCompatActivity {
         operator = "";
         result = 0.0;
         textView.setText("0");
+        calculationDisplay.setText("0");
     }
     private void calculateResult() {
         if (!currNumber.isEmpty()) {
+            double firstOperant = Double.parseDouble(prevNumber);
             double secondOperand = Double.parseDouble(currNumber);
             switch (operator) {
                 case "+":
-                    result += secondOperand;
+                    result = firstOperant + secondOperand;
                     break;
                 case "-":
-                    result -= secondOperand;
+                    result = firstOperant - secondOperand;
                     break;
                 case "*":
-                    result *= secondOperand;
+                    result = firstOperant * secondOperand;
                     break;
                 case "/":
                     if (secondOperand != 0) {
-                        result /= secondOperand;
+                        result = firstOperant / secondOperand;
                     } else {
                         // Handle division by zero error
                         // ...
                         currNumber = "Error";
+                        prevNumber = "Error";
                         operator = "";
                         result = 0.0;
                         textView.setText(currNumber);
+                        updateCalculationDisplay();
                         return;
                     }
                     break;
             }
+            calculationPerformed = true;
+            result = Math.round(result * 1000000) / 1000000.0;
+            updateCalculationDisplay();
             currNumber = String.valueOf(result);
-            textView.setText(currNumber);
+            textView.setText(String.valueOf(result));
         }
     }
 }
